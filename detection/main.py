@@ -25,8 +25,9 @@ def read_test(file_name):
         spam_reader = csv.reader(csvfile, delimiter=',')
         for row in spam_reader:
             names.append(row[0])
-            img = cv2.imread('./test/' + row[0])
+            tmp = cv2.imread('./test/' + row[0])
             classes[row[0]] = int(float(row[1]))
+            img=tmp[int(float(row[4])):int(float(row[5])),int(float(row[2])):int(float(row[3]))]
             res.append(img)
     return res, names, classes
 
@@ -39,8 +40,8 @@ def classification(img1,img2,sift,bf):
             matches = bf.match(des1, des2)
             matches = sorted(matches, key=lambda x: x.distance)
             for m in matches:
-                if m.distance < 280:
-                    points += m.distance
+                if m.distance < 380:
+                    points += (380-m.distance)
         return points
     except Exception as ex:
         print(ex)
@@ -66,8 +67,7 @@ if __name__=='__main__':
             if len(classes_prot[j]) !=0:
                 index=classes_prot[j][0]
                 val=classification(list_test[i],list_prot[index],sift,bf)
-                if val>2000:
-                  res.append(j)
+                res.append(j)
         if len(res)==1:
             index=names_test[i]
             result[index]=res[0]
