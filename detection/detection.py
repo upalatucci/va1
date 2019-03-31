@@ -45,8 +45,8 @@ def classification(img1,img2,sift,bf):
             matches = bf.match(des1, des2)
             matches = sorted(matches, key=lambda x: x.distance)
             for m in matches:
-                if m.distance < 220:
-                    points += (220-m.distance)
+                if m.distance < 224:
+                    points += (224-m.distance)
         return points
     except Exception as ex:
         print(ex)
