@@ -48,7 +48,7 @@ def classification_with_accuracy(args):
     count_file = 0
     count_true = 0
     
-    with open("gt.csv") as gt_file:
+    with input_file as gt_file:
         lines = gt_file.readlines()
         for line in lines:
             file_name, gt = line.split(",")
@@ -100,4 +100,4 @@ def extract_classification(sift, bf, file_name, logos_set):
         
             
 if __name__ == "__main__":
-    classification(sys.argv)
+    classification_with_accuracy(sys.argv)
