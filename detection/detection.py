@@ -64,9 +64,7 @@ if __name__=='__main__':
     result={i:0 for i in names_test}
     sift = cv2.xfeatures2d.SIFT_create()
     bf = cv2.BFMatcher()
-    print('Inizio classificazione')
     for i in range(len(list_test)):
-        print('Immagine ' + names_test[i])
         res = list()
         for j in range(len(classes_prot)):
             if len(classes_prot[j]) !=0:
