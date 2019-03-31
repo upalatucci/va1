@@ -94,6 +94,6 @@ if __name__=='__main__':
         val2=classes_test[i]
         if val1==val2:
             tot+=1
-    acc=tot/len(names_test)
+    acc=(tot/len(names_test))*100
     print('Accuracy: '+str(acc))
 
