@@ -31,7 +31,7 @@ def classification(args):
     results = open(args[2], "w")
     
     for file_name in os.listidr(input_file):
-        id_class = extract_classification(sift, bf, file_name)
+        id_class = extract_classification(sift, bf, file_name, logos_set)
         results.write(file_name + "," + id_class + "\n")
     results.close()
     
@@ -52,7 +52,7 @@ def classification_with_accuracy(args):
         for line in lines:
             file_name, gt = line.split(",")
             
-            id_class = extract_classification(sift, bf, file_name)
+            id_class = extract_classification(sift, bf, file_name, logos_set)
             
             if float(id_class) == float(gt):
                 count_true += 1
@@ -62,7 +62,7 @@ def classification_with_accuracy(args):
     print(count_true/count_file)
     
 
-def extract_classification(sift, bf, file_name):
+def extract_classification(sift, bf, file_name, logos_set):
     points_for_class = {}
     image = cv.imread(os.path.join(TEST_DIR, file_name))
     kp, features_image = sift.detectAndCompute(image, None)
@@ -81,7 +81,7 @@ def extract_classification(sift, bf, file_name):
                 matches = sorted(matches, key = lambda x:x.distance)
                 
                 for m in matches:
-                    if m.distance < 400:
+                    if m.distance < 250:
                         points += m.distance
                 
                 #if len(matches) > 0:
