@@ -1,5 +1,6 @@
 import cv2
 import csv
+import sys
 
 def read_prot(file_name):
     res = list()
@@ -13,8 +14,10 @@ def read_prot(file_name):
             index = int(float(row[1]))
             classes[index].append(j)
             j += 1
-            img = cv2.imread('./prot/' + row[0])
-            res.append(img)
+            img = cv2.imread('./prot/' + row[0], 0)
+            th1 = cv2.adaptiveThreshold(img, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, \
+                                        cv2.THRESH_BINARY, 11, 2)
+            res.append(th1)
     return res, names, classes
 
 def read_test(file_name):
@@ -25,9 +28,11 @@ def read_test(file_name):
         spam_reader = csv.reader(csvfile, delimiter=',')
         for row in spam_reader:
             names.append(row[0])
-            tmp = cv2.imread('./test/' + row[0])
+            tmp = cv2.imread('./test/' + row[0], 0)
+            th1 = cv2.adaptiveThreshold(tmp, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, \
+                                        cv2.THRESH_BINARY, 11, 2)
             classes[row[0]] = int(float(row[1]))
-            img=tmp[int(float(row[4])):int(float(row[5])),int(float(row[2])):int(float(row[3]))]
+            img = th1[int(float(row[4])):int(float(row[5])), int(float(row[2])):int(float(row[3]))]
             res.append(img)
     return res, names, classes
 
@@ -40,14 +45,14 @@ def classification(img1,img2,sift,bf):
             matches = bf.match(des1, des2)
             matches = sorted(matches, key=lambda x: x.distance)
             for m in matches:
-                if m.distance < 380:
-                    points += (380-m.distance)
+                if m.distance < 220:
+                    points += (220-m.distance)
         return points
     except Exception as ex:
         print(ex)
 
-def write(result, names_test):
-    with open('result.csv', mode='w') as csvfile:
+def write(result, names_test,name_file):
+    with open(name_file, mode='w') as csvfile:
         spam_writer=csv.writer(csvfile,delimiter=',')
         for i in names_test:
             spam_writer.writerow([i,result[i]])
@@ -55,7 +60,7 @@ def write(result, names_test):
 
 if __name__=='__main__':
     list_prot,names_prot,classes_prot=read_prot('prot.csv')
-    list_test,names_test,classes_test=read_test('gt.csv')
+    list_test,names_test,classes_test=read_test(sys.argv[1])
     result={i:0 for i in names_test}
     sift = cv2.xfeatures2d.SIFT_create()
     bf = cv2.BFMatcher()
@@ -85,12 +90,12 @@ if __name__=='__main__':
             index = names_test[i]
             result[index]=val_index
     tot=0
-    write(result,names_test)
+    write(result,names_test,sys.argv[2])
     for i in names_test:
         val1=result[i]
         val2=classes_test[i]
         if val1==val2:
             tot+=1
     acc=tot/len(names_test)
-    print('Accurancy: '+str(acc))
+    print('Accuracy: '+str(acc))
 
