@@ -5,6 +5,7 @@ import os
 import operator 
 
 TEST_DIR = "test"
+THRESHOLD = 400
 
 def build_prot_dict(sift):
     logos_set = {}
@@ -81,8 +82,8 @@ def extract_classification(sift, bf, file_name, logos_set):
                 matches = sorted(matches, key = lambda x:x.distance)
                 
                 for m in matches:
-                    if m.distance < 250:
-                        points += m.distance
+                    if m.distance < THRESHOLD:
+                        points += (THRESHOLD - m.distance)
                 
                 #if len(matches) > 0:
                 #    points = points/len(matches)
