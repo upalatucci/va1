@@ -5,7 +5,6 @@ import os
 import operator 
 
 TEST_DIR = "test"
-INF = 1000000
 def classification(args):
     input_file = args[1]
     logos_set = {}
@@ -22,40 +21,56 @@ def classification(args):
             kp, features = sift.detectAndCompute(logo, None)
             if features is not None:
                 logos_set[row[1]].append(features)
-            
+    
     bf = cv.BFMatcher()
     points_for_class = {}
     results = open(args[2], "w")
+    count_file = 0
+    count_true = 0
     
-    for image_path in os.listdir(TEST_DIR):
-        image = cv.imread(os.path.join(TEST_DIR, image_path))
-        kp, features_image = sift.detectAndCompute(image, None)
-        
-        for logo_id, array in logos_set.items():
-                
-            for prot in array:
-                if logo_id not in points_for_class:
-                    points_for_class[logo_id] = INF
-                
-                try:
-                    matches = bf.match(features_image, prot)
+    with open("gt.csv") as gt_file:
+        lines = gt_file.readlines()
+        for line in lines:
+            file_name, gt = line.split(",")
+            image = cv.imread(os.path.join(TEST_DIR, file_name))
+            kp, features_image = sift.detectAndCompute(image, None)
+            
+            for logo_id, array in logos_set.items():
+                points_for_class[logo_id] = {}
+                count_image_for_logo = 0
+                points_for_class[logo_id][count_image_for_logo] = 0
+                for prot in array:
+                    if count_image_for_logo not in points_for_class[logo_id]:
+                        points_for_class[logo_id][count_image_for_logo] = 0
+                    count_image_for_logo += 1
+                    points = 0
+                    try:
+                        matches = bf.match(features_image, prot)
+                        matches = sorted(matches, key = lambda x:x.distance)
+                        
+                        for m in matches:
+                            if m.distance < 400:
+                                points += m.distance
+                        
+                        #if len(matches) > 0:
+                        #    points = points/len(matches)
+                        
+                    except Exception as e :
+                        print(e)
                     
-                    matches = sorted(matches, key=lambda x:x.distance)
-                    #points_for_class[logo_id] += matches[0].distance
-                    
-                    for m in matches:
-                        if m.distance < 300:
-                            if points_for_class[logo_id] == INF:
-                                points_for_class[logo_id] = 0
-                            points_for_class[logo_id] += m.distance
-                except Exception as e :
-                    pass
-            if logo_id in points_for_class:
-                points_for_class[logo_id] = points_for_class[logo_id] / len(array)
-        #print(points_for_class)
-        id_class = min(points_for_class.items(), key=operator.itemgetter(1))[0]
-        results.write(image_path + "," + id_class + "\n")
+                    points_for_class[logo_id][count_image_for_logo] = points
+                
+                id_max = max(points_for_class[logo_id].items(), key=operator.itemgetter(1))[0]
+                points_for_class[logo_id] = points_for_class[logo_id][id_max]
+                
+            id_class = max(points_for_class.items(), key=operator.itemgetter(1))[0]
+            
+            if float(id_class) == float(gt):
+                count_true += 1
+            count_file += 1
+            results.write(file_name + "," + id_class + "\n")
     results.close()
+    print(count_true/count_file)
         
             
 if __name__ == "__main__":
