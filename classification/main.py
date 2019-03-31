@@ -100,4 +100,4 @@ def extract_classification(sift, bf, file_name, logos_set):
         
             
 if __name__ == "__main__":
-    classification_with_accuracy(sys.argv)
+    classification(sys.argv)
