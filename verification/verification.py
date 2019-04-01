@@ -65,11 +65,11 @@ def verification(nome_file_test,nome_file_risultati):
                     #if(float(binary_correct_value)==0.0):
                     #    correct_match=correct_match+1
 
-                tot_match =tot_match+1
+                #tot_match =tot_match+1
             except Exception as e :
                 print("Descrittore Non trovato")
 
-    print("Accuracy= "+str(correct_match/tot_match*100))
+    #print("Accuracy= "+str(correct_match/tot_match*100))
 
 
 if __name__ == "__main__":
