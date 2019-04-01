@@ -12,7 +12,7 @@ def verification(nome_file_test,nome_file_risultati):
         i=0
         for row in spamreader:
             i=i+1
-            binary_correct_value = row[2]
+            #binary_correct_value = row[2]
 
             img1 = cv2.imread("imgs/"+row[0],0)          # queryImage
 
@@ -56,14 +56,14 @@ def verification(nome_file_test,nome_file_risultati):
                 if (len(good)>1):
                     file1.write(n1[0]+"-"+n2[0]+"Result:1\n")
                     file1.close()
-                    if(float(binary_correct_value)==1.0):
-                        correct_match=correct_match+1
+                    #if(float(binary_correct_value)==1.0):
+                    #    correct_match=correct_match+1
 
                 else:
                     file1.write(n1[0]+"-"+n2[0]+" Result:0\n")
                     file1.close()
-                    if(float(binary_correct_value)==0.0):
-                        correct_match=correct_match+1
+                    #if(float(binary_correct_value)==0.0):
+                    #    correct_match=correct_match+1
 
                 tot_match =tot_match+1
             except Exception as e :
