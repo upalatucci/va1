@@ -48,7 +48,7 @@ def classification_with_accuracy(args):
     count_file = 0
     count_true = 0
     
-    with input_file as gt_file:
+    with open(input_file) as gt_file:
         lines = gt_file.readlines()
         for line in lines:
             file_name, gt = line.split(",")
