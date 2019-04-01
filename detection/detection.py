@@ -23,17 +23,15 @@ def read_prot(file_name):
 def read_test(file_name):
     res = list()
     names = list()
-    classes = dict()
     sift = cv2.xfeatures2d.SIFT_create()
     with open(file_name) as csvfile:
         spam_reader = csv.reader(csvfile, delimiter=',')
         for row in spam_reader:
             names.append(row[0])
             img = cv2.imread('./test/' + row[0],0)
-            classes[row[0]] = int(float(row[1]))
             kp1, des1 = sift.detectAndCompute(img, None)
             res.append(des1)
-    return res, names, classes
+    return res, names
 
 def classification(img1,img2,bf):
     try:
@@ -42,8 +40,8 @@ def classification(img1,img2,bf):
             matches = bf.match(img1, img2)
             matches = sorted(matches, key=lambda x: x.distance)
             for m in matches:
-                if m.distance < 110:
-                    points += (110-m.distance)
+                if m.distance < 135:
+                    points += (135-m.distance)
         return points
     except Exception as ex:
         print(ex)
@@ -57,14 +55,11 @@ def write(result, names_test,name_file):
 
 if __name__=='__main__':
     list_prot,names_prot,classes_prot=read_prot('prot.csv')
-    print("prot letto")
-    list_test,names_test,classes_test=read_test(sys.argv[1])
-    print("test letto")
+    list_test,names_test=read_test(sys.argv[1])
     result={i:0 for i in names_test}
     bf = cv2.BFMatcher()
     for i in range(len(list_test)):
         res = list()
-        print(names_test[i])
         val_max=0
         val_index=0
         for j in range(len(names_prot)):
@@ -72,16 +67,7 @@ if __name__=='__main__':
             if val>val_max:
                 val=val_max
                 val_index=j
-        print("Val index: " + str(classes_prot[val_index]))
         index = names_test[i]
         result[index] = classes_prot[val_index]
-    tot=0
     write(result,names_test,sys.argv[2])
-    for i in names_test:
-        val1=result[i]
-        val2=classes_test[i]
-        if val1==val2:
-            tot+=1
-    acc=tot/len(names_test)*100
-    print('Accuracy: '+str(acc))
 
