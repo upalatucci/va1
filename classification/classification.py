@@ -33,7 +33,7 @@ def classification(args):
     
     for file_name in os.listidr(input_file):
         id_class = extract_classification(sift, bf, file_name, logos_set)
-        results.write(file_name + "," + id_class + "\n")
+        results.write(id_class + "\n")
     results.close()
     
 
@@ -51,13 +51,12 @@ def classification_with_accuracy(args):
     with open(input_file) as gt_file:
         lines = gt_file.readlines()
         for file_name in lines:
-            
-            id_class = extract_classification(sift, bf, file_name, logos_set)
+            id_class = extract_classification(sift, bf, file_name.rstrip(), logos_set)
             
             #if float(id_class) == float(gt):
             #    count_true += 1
             #count_file += 1
-            results.write(file_name + "," + id_class + "\n")
+            results.write(id_class + "\n")
     results.close()
     #print(count_true/count_file)
     
